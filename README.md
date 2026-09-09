@@ -1,2 +1,2 @@
 # agentic-coding-toolkit
-▎ Production-grade CLAUDE.md, skills, and rules setup for Claude Code, ship AI-agent-built apps that actually hold up for real clients.
+▎ A complete, production-tested setup for working with Claude Code, proper CLAUDE.md structure, custom skills, trigger rules, and the guardrails that keep AI-agent-built code from falling apart before it 
