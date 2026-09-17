@@ -7,7 +7,8 @@ A complete, production-tested setup for working with Claude Code — proper CLAU
 ```
 .claude/
 ├── rules/
-│   └── coding-practices.md   # DRY/KISS/YAGNI, naming, testing, error handling, security
+│   ├── coding-practices.md   # DRY/KISS/YAGNI, naming, testing, error handling, security
+│   └── scalability-guide.md  # Architecture, data access, APIs, background work, infrastructure
 └── skills/
     └── daily-update/         # Generate an EOD progress update from today's git history
 ```
@@ -21,8 +22,29 @@ Drop the `.claude/` folder into any repo (or copy over the pieces you want) and 
 Project-wide conventions Claude Code applies to every change: naming and file
 structure, comment discipline, documentation triggers, efficiency and
 concurrency patterns, testing expectations, and error-handling/security
-requirements (no hardcoded secrets, RLS as access control, validate at the
-boundary, etc.). Read it once — it's written to be enforced, not skimmed.
+requirements (no hardcoded secrets, RLS as access control, authentication vs.
+authorization, validate at the boundary, etc.). Read it once — it's written to
+be enforced, not skimmed.
+
+### `scalability-guide.md`
+
+The system-design counterpart: applies when a change decides *where code lives*
+or *what it costs at scale*. Covers the priority order every decision resolves
+against (correctness → security → maintainability → performance → scalability →
+complexity), following the architecture already in the repo instead of
+introducing a competing one, layer separation and feature-owned modules,
+querying the database the way the data is actually shaped (pagination,
+indexes, no N+1), API contracts that survive their consumers, moving expensive
+work into background jobs, stateless servers, caching with a real invalidation
+story, monitoring, blast-radius analysis before changing shared code, and
+choosing infrastructure for the traffic you have rather than the traffic you
+imagine.
+
+The two files split on a single line: `coding-practices.md` governs how the
+code you're writing should read; `scalability-guide.md` governs where it
+belongs and what it costs. Overlapping concerns (caching, frontend data volume,
+testing depth, authorization) live in one place only — cross-referenced, not
+duplicated.
 
 ## Skills
 

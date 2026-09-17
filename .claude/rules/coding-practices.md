@@ -1,7 +1,10 @@
 # Coding practices
 
-Applies to every change in this repo. Where a rule here meets a stricter one in
-`CLAUDE.md` or `eslint.config.mjs`, the stricter one wins.
+Applies to every change in this repo — how the code you are writing should
+read. For where that code belongs and what it costs at scale (architecture,
+database access, API contracts, background work, infrastructure), see
+`scalability-guide.md`. Where a rule here meets a stricter one in `CLAUDE.md`,
+`scalability-guide.md` or `eslint.config.mjs`, the stricter one wins.
 
 ## The four principles
 
@@ -86,6 +89,13 @@ and buys nothing.
 - **Keep work off the client.** Server Components by default; `"use client"`
   only where interactivity requires it. Check with the bundle analyzer before
   adding a large dependency to a client component.
+- **Never ship the client more data than it renders.** Filter and paginate on
+  the server; a list that loads 5,000 records to display 20 is a bug waiting
+  for a real dataset. Lazy-load, code-split, debounce searches and deduplicate
+  in-flight requests rather than fetching wider and trimming in the browser.
+- **A cache needs an expiry and an invalidation story** before it is added —
+  and must not take the feature down when it is unavailable. The system-level
+  decision of *what* to cache is in `scalability-guide.md`.
 - **Optimization must not cost readability.** Prefer changes that improve both.
   If a real speedup makes the code harder to follow, comment why it's shaped
   that way. Skip micro-optimizations entirely.
@@ -104,6 +114,11 @@ and buys nothing.
   fixtures are the point.
 - UI and integration paths have no automated suite. Verify those with
   `/verify-feature` and leave the screenshots behind as the evidence.
+- **A feature isn't done until its failure modes are covered too**: the happy
+  path, rejected input, the authorization boundary, the edge cases that matter,
+  and the existing behaviour the change could have broken. Run lint, typecheck
+  and the relevant suites before calling it complete — clicking through the app
+  is not a substitute for a test that will still run next month.
 
 ## Error handling
 
@@ -142,6 +157,11 @@ and buys nothing.
 - **RLS is the access control.** Read through the user's own client. The
   service role bypasses every policy: use it only where there is no user
   (webhooks, cron), and never to work around a policy that is inconvenient.
+- **Authentication and authorization are two checks, not one.**
+  Authentication answers *who are you*; authorization answers *are you allowed
+  to do this*. A logged-in user is not thereby entitled to project 123 — verify
+  they belong to the owning organization and that the organization owns the
+  resource. Every feature answers both questions.
 - **Least privilege**, everywhere it's a choice: the narrowest OAuth scope, the
   smallest token lifetime, the fewest columns selected.
 - **Validate and narrow every input at the boundary** — request bodies, query
